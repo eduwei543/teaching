@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Card Draw</title>
+    <style>
+        /* Version: 201412-1 | Author: eduwei */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            font-size: 200px;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="card" class="card">?</div>
+        <button class="button" onclick="drawCard()">Draw a Card</button>
+    </div>
+    <!-- Version: 201412-1 | Author: eduwei -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        /**
+         * Random Card Draw Script
+         * Version: 201412-1
+         * Author: eduwei
+         */
+        function drawCard() {
+            const cards = [1, 2, 3, 4, 5, 6, 7];
+            const cardElement = document.getElementById('card');
+            let intervalId;
+            let elapsed = 0;
+            const duration = 3000; // 3 seconds
+
+            function displayRandomCard() {
+                const randomIndex = Math.floor(Math.random() * cards.length);
+                cardElement.textContent = cards[randomIndex];
+            }
+
+            intervalId = setInterval(() => {
+                displayRandomCard();
+                elapsed += 100;
+                if (elapsed >= duration) {
+                    clearInterval(intervalId);
+                    displayRandomCard();
+                    // Trigger confetti effect
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
