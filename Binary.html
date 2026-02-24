@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二進位數字系統 / Binary Number System</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 0;
+        }
+        canvas {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            /* 確保畫布在不同設備上不會過大，並保持響應式 */
+            max-width: 100%;
+            height: auto; 
+        }
+        .status-board {
+            background: #212529;
+            color: #fff;
+            padding: 20px 50px;
+            border-radius: 8px;
+            font-size: 28px; /* 放大字體 */
+            font-weight: bold;
+            text-align: center;
+            margin-top: 25px;
+            min-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .binary-text { color: #0dcaf0; letter-spacing: 10px; font-family: monospace; }
+        .decimal-text { color: #198754; font-size: 40px; } /* 放大字體 */
+        
+        /* 雙語標題樣式 */
+        .bilingual-title {
+            text-align: center;
+            margin-bottom: 25px;
+            user-select: none;
+        }
+        /* 新增頁尾宣告專屬樣式 */
+        .footer-info {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #95a5a6;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        .bilingual-title h2 {
+            margin: 0;
+            font-size: 36px; /* 放大標題 */
+            color: #2c3e50;
+            letter-spacing: 2px;
+        }
+        .bilingual-title .sub-en {
+            font-size: 20px; /* 放大副標題 */
+            color: #7f8c8d;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 雙語標題區塊 -->
+<div class="bilingual-title">
+    <h2>二進位數字系統</h2>
+    <div class="sub-en">Binary Number System</div>
+</div>
+
+<!-- Canvas 畫布元素：提升內部解析度 -->
+<canvas id="gameCanvas" width="1000" height="400"></canvas>
+
+<div class="status-board">
+    <div>二進位 (Binary)： <span id="binaryStr" class="binary-text">00000</span></div>
+    <div style="margin-top: 15px;">十進位 (Decimal)： <span id="decimalSum" class="decimal-text">0</span></div>
+</div>
+
+<!-- 頁尾宣告區塊 -->
+<div class="footer-info">Shulin Junior High School / Information Technology</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const binaryStrEl = document.getElementById('binaryStr');
+    const decimalSumEl = document.getElementById('decimalSum');
+
+    // 系統常數設定：同步放大卡片尺寸與間距 (約放大 1.25 倍)
+    const CARD_WIDTH = 150; 
+    const CARD_HEIGHT = 225;
+    const CARD_GAP = 30;
+    const START_X = (canvas.width - (5 * CARD_WIDTH + 4 * CARD_GAP)) / 2;
+    const START_Y = (canvas.height - CARD_HEIGHT) / 2;
+
+    // 卡片資料模型 (Data Model)
+    // state: 0 (蓋牌, 背面), 1 (翻開, 正面)
+    // scaleX 用於模擬 3D 翻牌的 2D 投影壓縮
+    const cards = [
+        { weight: 16, count: 16, state: 0, scaleX: 1, isAnimating: false, x: 0 },
+        { weight: 8,  count: 8,  state: 0, scaleX: 1, isAnimating: false, x: 0 },
+        { weight: 4,  count: 4,  state: 0, scaleX: 1, isAnimating: false, x: 0 },
+        { weight: 2,  count: 2,  state: 0, scaleX: 1, isAnimating: false, x: 0 },
+        { weight: 1,  count: 1,  state: 0, scaleX: 1, isAnimating: false, x: 0 }
+    ];
+
+    // 初始化卡片 X 座標
+    cards.forEach((card, index) => {
+        card.x = START_X + index * (CARD_WIDTH + CARD_GAP);
+    });
+
+    // 繪製寶可夢球的純 Canvas 實作
+    function drawPokeball(x, y, radius) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        // 黑色外框與底色
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#222';
+        ctx.stroke();
+
+        // 上半部紅色
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, Math.PI, 0);
+        ctx.fillStyle = '#ff3b3b';
+        ctx.fill();
+        ctx.stroke();
+
+        // 中間黑線
+        ctx.beginPath();
+        ctx.moveTo(-radius, 0);
+        ctx.lineTo(radius, 0);
+        ctx.lineWidth = radius * 0.2;
+        ctx.strokeStyle = '#222';
+        ctx.stroke();
+
+        // 中間白色大圓
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 中間黑色小圓
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.15, 0, Math.PI * 2);
+        ctx.fillStyle = '#222';
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    // 依據數量計算網格並繪製球
+    function drawBalls(cardX, cardY, count) {
+        let cols, rows;
+        if (count === 16) { cols = 4; rows = 4; }
+        else if (count === 8) { cols = 2; rows = 4; }
+        else if (count === 4) { cols = 2; rows = 2; }
+        else if (count === 2) { cols = 1; rows = 2; }
+        else { cols = 1; rows = 1; }
+
+        const cellW = CARD_WIDTH / cols;
+        const cellH = CARD_HEIGHT / rows;
+        // 根據格子大小動態調整球的半徑 (隨卡片放大自動成長)
+        const radius = Math.min(cellW, cellH) * 0.35; 
+
+        for (let i = 0; i < count; i++) {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const ballX = cardX + (col * cellW) + (cellW / 2);
+            const ballY = cardY + (row * cellH) + (cellH / 2);
+            drawPokeball(ballX, ballY, radius);
+        }
+    }
+
+    // 主渲染迴圈 (Render Loop)
+    function draw() {
+        // 清空畫布
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        cards.forEach(card => {
+            ctx.save();
+            
+            // 處理翻牌變形 (從中心點縮放 X 軸)
+            const centerX = card.x + CARD_WIDTH / 2;
+            const centerY = START_Y + CARD_HEIGHT / 2;
+            ctx.translate(centerX, centerY);
+            ctx.scale(card.scaleX, 1);
+            ctx.translate(-centerX, -centerY);
+
+            // 繪製卡片底座
+            ctx.beginPath();
+            ctx.roundRect(card.x, START_Y, CARD_WIDTH, CARD_HEIGHT, 10); // 圓角
+            ctx.fillStyle = '#F0F8FF'; // AliceBlue
+            ctx.fill();
+            ctx.lineWidth = 4; // 外框加粗
+            ctx.strokeStyle = '#6495ED'; // CornflowerBlue
+            ctx.stroke();
+
+            // 若卡片狀態為 1 (且未縮小到看不見)，則繪製正面(寶可夢球)
+            if (card.state === 1 && card.scaleX > 0) {
+                drawBalls(card.x, START_Y, card.count);
+            }
+            
+            ctx.restore();
+
+            // 新增：在卡片下方空白處繪製獨立的 0 或 1 標示 (不受翻轉縮放影響)
+            ctx.font = "bold 48px monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            
+            if (card.state === 0) {
+                // 狀態 0：顯示灰色
+                ctx.fillStyle = "#adb5bd"; 
+                ctx.fillText("0", card.x + CARD_WIDTH / 2, START_Y + CARD_HEIGHT + 20);
+            } else {
+                // 狀態 1：顯示與狀態板相同的亮藍色
+                ctx.fillStyle = "#0dcaf0"; 
+                ctx.fillText("1", card.x + CARD_WIDTH / 2, START_Y + CARD_HEIGHT + 20);
+            }
+            
+        });
+    }
+
+    // 動畫狀態更新邏輯
+    function update() {
+        let isAnyAnimating = false;
+        const animationSpeed = 0.1;
+
+        cards.forEach(card => {
+            if (card.isAnimating) {
+                isAnyAnimating = true;
+                // 第一階段：縮小寬度到 0 (模擬轉至側面)
+                if (card.phase === 'shrinking') {
+                    card.scaleX -= animationSpeed;
+                    if (card.scaleX <= 0) {
+                        card.scaleX = 0;
+                        card.phase = 'expanding';
+                        // 狀態切換 (0變1，1變0)
+                        card.state = card.state === 0 ? 1 : 0; 
+                    }
+                } 
+                // 第二階段：從 0 恢復至原始寬度
+                else if (card.phase === 'expanding') {
+                    card.scaleX += animationSpeed;
+                    if (card.scaleX >= 1) {
+                        card.scaleX = 1;
+                        card.isAnimating = false;
+                        updateScore(); // 動畫完成後更新分數
+                    }
+                }
+            }
+        });
+
+        draw();
+
+        // 若有動畫進行中，則請求下一幀
+        if (isAnyAnimating) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    // 更新 DOM 狀態列
+    function updateScore() {
+        let binary = '';
+        let decimal = 0;
+        cards.forEach(card => {
+            if (card.state === 1) {
+                binary += '1';
+                decimal += card.weight;
+            } else {
+                binary += '0';
+            }
+        });
+        binaryStrEl.textContent = binary;
+        decimalSumEl.textContent = decimal;
+    }
+
+    // 事件監聽：AABB 碰撞偵測 (處理點擊)
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        // 將滑鼠在視窗的座標轉換為 Canvas 內部的座標
+        const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        cards.forEach(card => {
+            // 判斷點擊座標是否在卡片的矩形範圍內
+            if (mouseX >= card.x && mouseX <= card.x + CARD_WIDTH &&
+                mouseY >= START_Y && mouseY <= START_Y + CARD_HEIGHT) {
+                
+                // 防止重複觸發動畫
+                if (!card.isAnimating) {
+                    card.isAnimating = true;
+                    card.phase = 'shrinking';
+                    requestAnimationFrame(update);
+                }
+            }
+        });
+    });
+
+    // 事件監聽：改變游標為手指 (Hover 效果)
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        let isHovering = false;
+        cards.forEach(card => {
+            if (mouseX >= card.x && mouseX <= card.x + CARD_WIDTH &&
+                mouseY >= START_Y && mouseY <= START_Y + CARD_HEIGHT) {
+                isHovering = true;
+            }
+        });
+        canvas.style.cursor = isHovering ? 'pointer' : 'default';
+    });
+
+    // 初始繪製
+    draw();
+    updateScore();
+
+</script>
+</body>
+</html>
