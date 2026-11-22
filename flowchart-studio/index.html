@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水林國中 流程圖教學小畫板 v4.0</title>
+    <style>
+        :root {
+            --bg-app: #f1f5f9;
+            --bg-panel: #ffffff;
+            --border-subtle: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --purple: #7c3aed;
+            --purple-bg: #f5f3ff;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+            user-select: none;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            z-index: 20;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-badge {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 9px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.28);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            height: 36px;
+            padding: 0 13px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 9px;
+            background: #fff;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #f8fafc;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: var(--success-hover);
+        }
+
+        /* Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 244px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-subtle);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sidebar-heading {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .palette-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .palette-card {
+            padding: 11px 10px;
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--radius-md);
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            cursor: grab;
+            transition: border-color 0.15s, background-color 0.15s, transform 0.12s;
+        }
+
+        .palette-card:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .palette-card:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .palette-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            text-align: center;
+        }
+
+        .palette-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .preview-oval {
+            width: 104px;
+            height: 36px;
+            border-radius: 999px;
+            border: 2px solid #059669;
+            background: #ecfdf5;
+        }
+
+        .preview-parallelogram {
+            width: 104px;
+            height: 36px;
+            border: 2px solid #2563eb;
+            background: #eff6ff;
+            transform: skewX(-14deg);
+        }
+
+        .preview-rect {
+            width: 104px;
+            height: 36px;
+            border: 2px solid #ea580c;
+            background: #fff7ed;
+            border-radius: 4px;
+        }
+
+        .preview-diamond {
+            width: 34px;
+            height: 34px;
+            margin: 3px 0;
+            border: 2px solid #ca8a04;
+            background: #fefce8;
+            transform: rotate(45deg);
+        }
+
+        .sidebar-tips {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        .sidebar-tips p {
+            margin: 4px 0;
+        }
+
+        /* Canvas Area */
+        .canvas-stage {
+            flex: 1;
+            position: relative;
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            background-image: radial-gradient(#cbd5e1 1.1px, transparent 1.1px);
+            background-size: 20px 20px;
+        }
+
+        /* Floating Toolbar */
+        .floating-toolbar {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 15;
+            max-width: calc(100% - 24px);
+            overflow-x: auto;
+        }
+
+        .tool-pill {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            background: #fff;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .tool-pill:hover:not(:disabled) {
+            background: #f1f5f9;
+        }
+
+        .tool-pill:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .tool-pill.active-mode {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .tool-pill.danger {
+            color: var(--danger);
+        }
+
+        .tool-pill.danger:hover:not(:disabled) {
+            background: var(--danger-bg);
+            border-color: #fecaca;
+        }
+
+        .tool-pill.purple {
+            color: var(--purple);
+            background: var(--purple-bg);
+            border-color: #ddd6fe;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 20px;
+            background: #cbd5e1;
+            margin: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .color-palette {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 999px;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.12s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.16);
+        }
+
+        .color-dot.selected {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary);
+        }
+
+        /* Floating Inline Text Editor + Quick Chips */
+        .editor-overlay {
+            position: fixed;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .editor-overlay.is-hidden {
+            display: none;
+        }
+
+        .quick-chips {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 4px 6px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-chips:empty {
+            display: none;
+        }
+
+        .chip-btn {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .chip-btn:hover {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        #textEditor {
+            min-width: 140px;
+            max-width: 260px;
+            padding: 6px 10px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            outline: none;
+        }
+
+        /* Status Toast */
+        .status-toast {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 25;
+        }
+
+        .status-toast.show {
+            opacity: 1;
+        }
+
+        /* Native Modal Dialog */
+        dialog {
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: min(380px, calc(100vw - 32px));
+            background: #fff;
+            color: var(--text-main);
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.28);
+            margin: auto;
+        }
+
+        dialog:modal {
+            overscroll-behavior: contain;
+        }
+
+        dialog::backdrop {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            overflow: hidden;
+            overscroll-behavior: contain;
+        }
+
+        .modal-head {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .modal-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-head h2 {
+            margin: 0 0 4px;
+            font-size: 19px;
+        }
+
+        .modal-head p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .lint-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .lint-box.ok {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .lint-box ul {
+            margin: 4px 0 0;
+            padding-left: 18px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: var(--success);
+        }
+
+        .modal-input.invalid {
+            border-color: var(--danger);
+        }
+
+        .modal-error {
+            min-height: 18px;
+            margin: 6px 0 12px;
+            font-size: 12px;
+            color: var(--danger);
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+            height: 40px;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 760px) {
+            .sidebar {
+                width: 170px;
+                padding: 10px;
+            }
+            .brand-title {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-badge">Flow v4.0</div>
+            <h1 class="brand-title">流程圖教學小畫板</h1>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn" id="btnSaveJson" title="儲存進度檔 (.json)">💾 暫存檔</button>
+            <button type="button" class="btn" id="btnLoadJson" title="讀取進度檔 (.json)">📂 讀取</button>
+            <input type="file" id="jsonFileInput" accept=".json,application/json" class="is-hidden">
+            <button type="button" class="btn btn-success" id="btnOpenExport">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                交作業 (下載 PNG)
+            </button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <aside class="sidebar" aria-label="圖形元件庫">
+            <h2 class="sidebar-heading">圖形元件庫 (拖曳或點擊)</h2>
+            <div class="palette-list">
+                <div class="palette-card" data-shape-type="terminal" draggable="true" role="button" tabindex="0" aria-label="新增橢圓形 Start 或 End">
+                    <div class="preview-oval"></div>
+                    <div class="palette-label">橢圓形 (Start / End)</div>
+                    <div class="palette-sub">開始與結束</div>
+                </div>
+
+                <div class="palette-card" data-shape-type="io" draggable="true" role="button" tabindex="0" aria-label="新增平行四邊形 Input 或 Output">
+                    <div class="preview-parallelogram"></div>
+                    <div class="palette-label">平行四邊形 (Input / Output)</div>
+                    <div class="palette-sub">資料輸入或輸出</div>
+                </div>
+
+                <div class="palette-card" data-shape-type="process" draggable="true" role="button" tabindex="0" aria-label="新增長方形 Process">
+                    <div class="preview-rect"></div>
+                    <div class="palette-label">長方形 (Process)</div>
+                    <div class="palette-sub">執行動作或運算</div>
+                </div>
+
+                <div class="palette-card" data-shape-type="decision" draggable="true" role="button" tabindex="0" aria-label="新增菱形 Decision">
+                    <div class="preview-diamond"></div>
+                    <div class="palette-label">菱形 (Decision)</div>
+                    <div class="palette-sub">是非判斷 (Yes / No)</div>
+                </div>
+            </div>
+
+            <div class="sidebar-tips">
+                <p><strong>💡 操作秘訣：</strong></p>
+                <p>• <strong>拖曳或點一下</strong>左側圖形即可加入</p>
+                <p>• <strong>雙擊圖形/箭頭</strong>可輸入文字</p>
+                <p>• <strong>連線模式</strong>：依序點「起點 ➔ 終點」</p>
+                <p>• 點選向上迴圈箭頭可<strong>切換繞道</strong></p>
+            </div>
+        </aside>
+
+        <main class="canvas-stage">
+            <div class="floating-toolbar" id="mainToolbar">
+                <button type="button" id="btnUndo" class="tool-pill" disabled title="復原 (Ctrl/Cmd + Z)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                    復原
+                </button>
+
+                <div class="toolbar-divider"></div>
+
+                <button type="button" id="btnSelect" class="tool-pill active-mode">選取</button>
+                <button type="button" id="btnPan" class="tool-pill">移動畫布</button>
+                <button type="button" id="btnConnect" class="tool-pill">連線 ➔</button>
+
+                <div id="actionSeparator" class="toolbar-divider is-hidden"></div>
+                <div id="colorPalette" class="color-palette is-hidden"></div>
+
+                <button type="button" id="btnFlip" class="tool-pill purple is-hidden">切換繞道</button>
+
+                <div class="toolbar-divider"></div>
+                <button type="button" id="btnDelete" class="tool-pill danger">刪除</button>
+                <button type="button" id="btnClear" class="tool-pill">清空</button>
+            </div>
+
+            <canvas id="canvas"></canvas>
+            <div id="statusToast" class="status-toast"></div>
+        </main>
+    </div>
+
+    <!-- Inline Editor + CLIL Quick Chips -->
+    <div id="editorOverlay" class="editor-overlay is-hidden">
+        <div id="quickChips" class="quick-chips"></div>
+        <input type="text" id="textEditor" placeholder="輸入內容後按 Enter" autocomplete="off">
+    </div>
+
+    <a id="downloadLink" class="is-hidden"></a>
+
+    <!-- Native Accessible Modal Dialog for Exporting -->
+    <dialog id="downloadModal" closedby="any" aria-labelledby="exportTitle">
+        <form method="dialog" id="exportForm" novalidate>
+            <div class="modal-head">
+                <div class="modal-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <h2 id="exportTitle">準備交作業</h2>
+                <p>請輸入您的班級與座號（會自動印在圖檔右下角）</p>
+            </div>
+
+            <div id="lintBox" class="lint-box"></div>
+
+            <input type="text" id="filenameInput" class="modal-input" placeholder="例如：70112" autocomplete="off" autofocus>
+            <p id="modalError" class="modal-error" aria-live="polite"></p>
+
+            <div class="modal-actions">
+                <button type="submit" value="cancel" class="btn">取消</button>
+                <button type="submit" value="confirm" class="btn btn-success">下載 2x 圖檔</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        'use strict';
+
+        // --- Progressive enhancement fallback for <dialog closedby="any"> ---
+        if (!('closedBy' in HTMLDialogElement.prototype)) {
+            const outside = (e, dialog) => {
+                const r = dialog.getBoundingClientRect();
+                return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+            };
+            for (const dialog of document.querySelectorAll('dialog[closedby="any"]')) {
+                let pressedOutside = false;
+                dialog.addEventListener('pointerdown', (e) => { pressedOutside = outside(e, dialog); });
+                dialog.addEventListener('pointerup', (e) => {
+                    if (pressedOutside && outside(e, dialog)) {
+                        dialog.returnValue = 'cancel';
+                        dialog.close();
+                    }
+                });
+            }
+        }
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const editorOverlay = document.getElementById('editorOverlay');
+        const quickChips = document.getElementById('quickChips');
+        const textEditor = document.getElementById('textEditor');
+        const btnUndo = document.getElementById('btnUndo');
+        const btnSelect = document.getElementById('btnSelect');
+        const btnPan = document.getElementById('btnPan');
+        const btnConnect = document.getElementById('btnConnect');
+        const btnFlip = document.getElementById('btnFlip');
+        const btnDelete = document.getElementById('btnDelete');
+        const btnClear = document.getElementById('btnClear');
+        const colorPalette = document.getElementById('colorPalette');
+        const actionSeparator = document.getElementById('actionSeparator');
+        const statusToast = document.getElementById('statusToast');
+
+        const downloadModal = document.getElementById('downloadModal');
+        const exportForm = document.getElementById('exportForm');
+        const filenameInput = document.getElementById('filenameInput');
+        const modalError = document.getElementById('modalError');
+        const lintBox = document.getElementById('lintBox');
+
+        // Themes aligned with G7 Algorithm Representation Slide P.7
+        const THEMES = {
+            green:  { fill: '#ecfdf5', stroke: '#059669', name: '綠' },
+            blue:   { fill: '#eff6ff', stroke: '#2563eb', name: '藍' },
+            orange: { fill: '#fff7ed', stroke: '#ea580c', name: '橘' },
+            yellow: { fill: '#fefce8', stroke: '#ca8a04', name: '黃' },
+            purple: { fill: '#faf5ff', stroke: '#9333ea', name: '紫' },
+            red:    { fill: '#fef2f2', stroke: '#dc2626', name: '紅' },
+            gray:   { fill: '#f3f4f6', stroke: '#4b5563', name: '灰' }
+        };
+
+        const TYPE_DEFAULT_THEME = {
+            terminal: 'green',   // 橢圓形: 綠
+            io: 'blue',          // 平行四邊形: 藍
+            process: 'orange',   // 長方形: 橘
+            decision: 'yellow'   // 菱形: 黃
+        };
+
+        const QUICK_LABELS = {
+            terminal: ['Start', 'End'],
+            io: ['Input ', 'Output '],
+            decision: ['條件成立？'],
+            connection: ['Yes', 'No']
+        };
+
+        const GRID_SIZE = 20;
+        const SHAPE_WIDTH = 148;
+        const SHAPE_HEIGHT = 60;
+
+        let shapes = [];
+        let connections = [];
+        let selectedShapeId = null;
+        let selectedConnection = null;
+        let draggingShapeId = null;
+        let isDragging = false;
+        let initialDragState = null;
+        let mode = 'select';
+        let connectionStartId = null;
+        let dragOffset = { x: 0, y: 0 };
+        let mousePos = null;
+        let nextId = 1;
+        let historyStack = [];
+        let viewport = { x: 0, y: 0 };
+        let isPanningCanvas = false;
+        let panStart = { x: 0, y: 0 };
+        let editingTarget = null; // { shape, conn, originalText }
+        let toastTimer = null;
+        let dpr = window.devicePixelRatio || 1;
+
+        // Build color dots
+        Object.entries(THEMES).forEach(([key, theme]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'color-dot';
+            btn.style.backgroundColor = theme.fill;
+            btn.style.borderColor = theme.stroke;
+            btn.title = theme.name;
+            btn.setAttribute('aria-label', `切換顏色：${theme.name}`);
+            btn.dataset.theme = key;
+            btn.addEventListener('click', () => changeShapeColor(key));
+            colorPalette.appendChild(btn);
+        });
+
+        function showToast(msg) {
+            statusToast.textContent = msg;
+            statusToast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => statusToast.classList.remove('show'), 2200);
+        }
+
+        function resize() {
+            dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+            canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+            draw();
+        }
+        window.addEventListener('resize', resize);
+        setTimeout(resize, 0);
+
+        function snap(value) {
+            return Math.round(value / GRID_SIZE) * GRID_SIZE;
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) - viewport.x,
+                y: (e.clientY - rect.top) - viewport.y
+            };
+        }
+
+        function saveState() {
+            const state = JSON.stringify({ shapes, connections, nextId });
+            if (historyStack[historyStack.length - 1] === state) return;
+            historyStack.push(state);
+            if (historyStack.length > 30) historyStack.shift();
+            updateUndoBtn();
+        }
+
+        function undo() {
+            commitEditor();
+            if (historyStack.length > 0) {
+                const state = JSON.parse(historyStack.pop());
+                shapes = state.shapes;
+                connections = state.connections;
+                nextId = state.nextId;
+                selectedShapeId = null;
+                selectedConnection = null;
+                connectionStartId = null;
+                draw();
+                updateUndoBtn();
+                updateToolbar();
+                showToast('已復原上一步');
+            }
+        }
+
+        function updateUndoBtn() {
+            btnUndo.disabled = historyStack.length === 0;
+        }
+
+        function updateToolbar() {
+            let showSeparator = false;
+            if (selectedShapeId) {
+                colorPalette.classList.remove('is-hidden');
+                showSeparator = true;
+                const shape = shapes.find(s => s.id === selectedShapeId);
+                const currentTheme = shape ? (shape.theme || TYPE_DEFAULT_THEME[shape.type]) : '';
+                Array.from(colorPalette.children).forEach(btn => {
+                    btn.classList.toggle('selected', btn.dataset.theme === currentTheme);
+                });
+            } else {
+                colorPalette.classList.add('is-hidden');
+            }
+
+            let showFlip = false;
+            if (selectedConnection) {
+                const from = shapes.find(s => s.id === selectedConnection.from);
+                const to = shapes.find(s => s.id === selectedConnection.to);
+                if (from && to && to.y < from.y - 20) showFlip = true;
+            }
+
+            if (showFlip) {
+                btnFlip.classList.remove('is-hidden');
+                showSeparator = true;
+            } else {
+                btnFlip.classList.add('is-hidden');
+            }
+
+            actionSeparator.classList.toggle('is-hidden', !showSeparator);
+        }
+
+        function addShape(type, x, y, text = '') {
+            saveState();
+            const shape = {
+                id: nextId++,
+                type,
+                x: snap(x),
+                y: snap(y),
+                text,
+                theme: TYPE_DEFAULT_THEME[type],
+                width: type === 'decision' ? 116 : SHAPE_WIDTH,
+                height: type === 'decision' ? 96 : SHAPE_HEIGHT
+            };
+            shapes.push(shape);
+            draw();
+            return shape;
+        }
+
+        function changeShapeColor(themeKey) {
+            if (!selectedShapeId) return;
+            const shape = shapes.find(s => s.id === selectedShapeId);
+            if (shape && shape.theme !== themeKey) {
+                saveState();
+                shape.theme = themeKey;
+                draw();
+                updateToolbar();
+            }
+        }
+
+        function setMode(newMode) {
+            commitEditor();
+            mode = newMode;
+            selectedShapeId = null;
+            selectedConnection = null;
+            connectionStartId = null;
+            updateToolbar();
+
+            btnSelect.classList.toggle('active-mode', mode === 'select');
+            btnPan.classList.toggle('active-mode', mode === 'pan');
+            btnConnect.classList.toggle('active-mode', mode === 'connect');
+
+            if (mode === 'connect') canvas.style.cursor = 'crosshair';
+            else if (mode === 'pan') canvas.style.cursor = 'grab';
+            else canvas.style.cursor = 'default';
+
+            if (mode === 'connect') showToast('連線模式：依序點擊「起點」與「終點」圖形');
+            draw();
+        }
+
+        function deleteSelected() {
+            commitEditor();
+            if (!selectedShapeId && !selectedConnection) return;
+            saveState();
+            if (selectedShapeId) {
+                shapes = shapes.filter(s => s.id !== selectedShapeId);
+                connections = connections.filter(c => c.from !== selectedShapeId && c.to !== selectedShapeId);
+                selectedShapeId = null;
+            } else if (selectedConnection) {
+                connections = connections.filter(c => c !== selectedConnection);
+                selectedConnection = null;
+            }
+            updateToolbar();
+            draw();
+        }
+
+        function flipConnectionSide() {
+            if (!selectedConnection) return;
+            saveState();
+            const from = shapes.find(s => s.id === selectedConnection.from);
+            const to = shapes.find(s => s.id === selectedConnection.to);
+            if (!from || !to) return;
+
+            let currentSide = selectedConnection.loopSide;
+            if (!currentSide || currentSide === 'auto') {
+                currentSide = (to.x < from.x) ? 'left' : 'right';
+            }
+            selectedConnection.loopSide = (currentSide === 'left') ? 'right' : 'left';
+            draw();
+        }
+
+        function clearCanvas() {
+            commitEditor();
+            if (shapes.length === 0) return;
+            if (confirm('確定要清空整個畫布嗎？')) {
+                saveState();
+                shapes = [];
+                connections = [];
+                selectedShapeId = null;
+                selectedConnection = null;
+                viewport = { x: 0, y: 0 };
+                updateToolbar();
+                draw();
+            }
+        }
+
+        // --- Sidebar Drag & Click-to-Add ---
+        document.querySelectorAll('.palette-card').forEach(card => {
+            const type = card.dataset.shapeType;
+
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', type);
+            });
+
+            card.addEventListener('click', () => {
+                const rect = canvas.getBoundingClientRect();
+                const offset = (shapes.length % 5) * 20;
+                const worldX = (rect.width / 2) - viewport.x + offset;
+                const worldY = (rect.height / 2) - viewport.y + offset;
+                const shape = addShape(type, worldX, worldY);
+                selectedShapeId = shape.id;
+                selectedConnection = null;
+                setMode('select');
+                selectedShapeId = shape.id;
+                draw();
+                updateToolbar();
+                showToast('已新增圖形，雙擊可輸入文字');
+            });
+
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+        });
+
+        canvas.addEventListener('dragover', (e) => e.preventDefault());
+
+        canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('type');
+            if (!type) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) - viewport.x;
+            const y = (e.clientY - rect.top) - viewport.y;
+            const shape = addShape(type, x, y);
+            selectedShapeId = shape.id;
+            selectedConnection = null;
+            draw();
+            updateToolbar();
+        });
+
+        // --- Canvas Interactions ---
+        function findShapeAt(x, y) {
+            return [...shapes].reverse().find(s =>
+                x >= s.x - s.width / 2 && x <= s.x + s.width / 2 &&
+                y >= s.y - s.height / 2 && y <= s.y + s.height / 2
+            );
+        }
+
+        function distToSegment(p, v, w) {
+            const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+            if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+        }
+
+        function findConnectionAt(x, y) {
+            for (const conn of connections) {
+                const from = shapes.find(s => s.id === conn.from);
+                const to = shapes.find(s => s.id === conn.to);
+                if (!from || !to) continue;
+                const { points } = getArrowPath(from, to, conn.loopSide);
+                for (let i = 0; i < points.length - 1; i++) {
+                    if (distToSegment({ x, y }, points[i], points[i + 1]) < 9) {
+                        return conn;
+                    }
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            commitEditor();
+            const { x, y } = getMousePos(e);
+
+            if (mode === 'pan') {
+                isPanningCanvas = true;
+                panStart = { x: e.clientX - viewport.x, y: e.clientY - viewport.y };
+                canvas.style.cursor = 'grabbing';
+                canvas.setPointerCapture(e.pointerId);
+                return;
+            }
+
+            const clickedShape = findShapeAt(x, y);
+
+            if (mode === 'select') {
+                if (clickedShape) {
+                    selectedShapeId = clickedShape.id;
+                    selectedConnection = null;
+                    draggingShapeId = clickedShape.id;
+                    dragOffset = { x: x - clickedShape.x, y: y - clickedShape.y };
+                    initialDragState = JSON.stringify({ shapes, connections, nextId });
+                    isDragging = false;
+                    canvas.setPointerCapture(e.pointerId);
+                } else {
+                    const clickedConn = findConnectionAt(x, y);
+                    if (clickedConn) {
+                        selectedConnection = clickedConn;
+                        selectedShapeId = null;
+                    } else {
+                        selectedShapeId = null;
+                        selectedConnection = null;
+                    }
+                }
+                draw();
+                updateToolbar();
+            } else if (mode === 'connect') {
+                if (clickedShape) {
+                    if (!connectionStartId) {
+                        connectionStartId = clickedShape.id;
+                    } else {
+                        if (connectionStartId !== clickedShape.id) {
+                            const exists = connections.some(c => c.from === connectionStartId && c.to === clickedShape.id);
+                            if (!exists) {
+                                saveState();
+                                connections.push({ from: connectionStartId, to: clickedShape.id, text: '', loopSide: 'auto' });
+                            }
+                        }
+                        connectionStartId = null;
+                    }
+                } else {
+                    connectionStartId = null;
+                }
+                draw();
+            }
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            mousePos = getMousePos(e);
+
+            if (mode === 'pan' && isPanningCanvas) {
+                viewport.x = e.clientX - panStart.x;
+                viewport.y = e.clientY - panStart.y;
+                draw();
+                return;
+            }
+
+            if (draggingShapeId) {
+                const shape = shapes.find(s => s.id === draggingShapeId);
+                if (shape) {
+                    const nx = snap(mousePos.x - dragOffset.x);
+                    const ny = snap(mousePos.y - dragOffset.y);
+                    if (nx !== shape.x || ny !== shape.y) {
+                        isDragging = true;
+                        shape.x = nx;
+                        shape.y = ny;
+                        draw();
+                    }
+                }
+            } else if (mode === 'connect' && connectionStartId) {
+                draw();
+            }
+        });
+
+        canvas.addEventListener('pointerup', () => {
+            if (mode === 'pan') {
+                isPanningCanvas = false;
+                canvas.style.cursor = 'grab';
+                return;
+            }
+            if (draggingShapeId && isDragging && initialDragState) {
+                historyStack.push(initialDragState);
+                if (historyStack.length > 30) historyStack.shift();
+                updateUndoBtn();
+            }
+            draggingShapeId = null;
+            initialDragState = null;
+            isDragging = false;
+        });
+
+        canvas.addEventListener('dblclick', (e) => {
+            if (mode !== 'select') return;
+            const { x, y } = getMousePos(e);
+            const clickedShape = findShapeAt(x, y);
+            if (clickedShape) {
+                showEditor(clickedShape, null);
+                return;
+            }
+            const clickedConn = findConnectionAt(x, y);
+            if (clickedConn) {
+                showEditor(null, clickedConn);
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.target === textEditor || e.target === filenameInput) return;
+            if (downloadModal.open) return;
+
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                deleteSelected();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                undo();
+            }
+        });
+
+        // --- Inline Editor with IME Fix & CLIL Quick Chips ---
+        function showEditor(shape, conn) {
+            editingTarget = {
+                shape,
+                conn,
+                originalText: shape ? shape.text : conn.text
+            };
+
+            textEditor.value = editingTarget.originalText;
+            quickChips.innerHTML = '';
+
+            const chipList = shape ? (QUICK_LABELS[shape.type] || []) : QUICK_LABELS.connection;
+            chipList.forEach(label => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'chip-btn';
+                chip.textContent = label.trim();
+                chip.addEventListener('mousedown', (ev) => {
+                    // Prevent input blur before click finishes
+                    ev.preventDefault();
+                    textEditor.value = label;
+                    if (!label.endsWith(' ')) {
+                        commitEditor();
+                    } else {
+                        textEditor.focus();
+                    }
+                });
+                quickChips.appendChild(chip);
+            });
+
+            editorOverlay.classList.remove('is-hidden');
+            updateEditorPos(shape, conn);
+            textEditor.focus();
+            textEditor.select();
+        }
+
+        function commitEditor() {
+            if (!editingTarget) return;
+            const { shape, conn, originalText } = editingTarget;
+            const nextText = textEditor.value.trim();
+
+            if (nextText !== originalText) {
+                saveState();
+                if (shape) shape.text = nextText;
+                if (conn) conn.text = nextText;
+            }
+            editingTarget = null;
+            editorOverlay.classList.add('is-hidden');
+            draw();
+        }
+
+        function cancelEditor() {
+            editingTarget = null;
+            editorOverlay.classList.add('is-hidden');
+            draw();
+        }
+
+        textEditor.addEventListener('blur', () => {
+            commitEditor();
+        });
+
+        textEditor.addEventListener('keydown', (e) => {
+            // Fix IME composition Enter bug (e.g., Zhuyin/Cangjie)
+            if (e.isComposing || e.keyCode === 229) return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                commitEditor();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelEditor();
+            }
+        });
+
+        function getConnectionLabelPoint(points) {
+            if (points.length === 4) {
+                return { x: (points[1].x + points[2].x) / 2, y: (points[1].y + points[2].y) / 2 };
+            }
+            if (points.length === 3) {
+                return { x: (points[1].x + points[2].x) / 2, y: (points[1].y + points[2].y) / 2 };
+            }
+            return { x: (points[0].x + points[1].x) / 2, y: (points[0].y + points[1].y) / 2 };
+        }
+
+        function updateEditorPos(shape, conn) {
+            const rect = canvas.getBoundingClientRect();
+            let screenX = 0;
+            let screenY = 0;
+
+            if (shape) {
+                screenX = rect.left + shape.x + viewport.x;
+                screenY = rect.top + shape.y + viewport.y;
+            } else if (conn) {
+                const from = shapes.find(s => s.id === conn.from);
+                const to = shapes.find(s => s.id === conn.to);
+                if (!from || !to) return;
+                const { points } = getArrowPath(from, to, conn.loopSide);
+                const pt = getConnectionLabelPoint(points);
+                screenX = rect.left + pt.x + viewport.x;
+                screenY = rect.top + pt.y + viewport.y;
+            }
+
+            editorOverlay.style.left = `${Math.max(12, Math.min(window.innerWidth - 200, screenX - 90))}px`;
+            editorOverlay.style.top = `${Math.max(60, screenY - 36)}px`;
+        }
+
+        // --- Path Geometry ---
+        function getShapeEdgeAdj(shape, side) {
+            if (shape.type === 'io') {
+                if (side === 'left') return 10;
+                if (side === 'right') return -10;
+            }
+            return 0;
+        }
+
+        function getArrowPath(from, to, loopSide = 'auto') {
+            const fromLeftAdj = getShapeEdgeAdj(from, 'left');
+            const fromRightAdj = getShapeEdgeAdj(from, 'right');
+            const toLeftAdj = getShapeEdgeAdj(to, 'left');
+            const toRightAdj = getShapeEdgeAdj(to, 'right');
+
+            const fromRect = {
+                y: from.y - from.height / 2,
+                w: from.width,
+                h: from.height,
+                cx: from.x,
+                cy: from.y,
+                rightX: from.x + from.width / 2 + fromRightAdj,
+                leftX: from.x - from.width / 2 + fromLeftAdj,
+                topY: from.y - from.height / 2,
+                bottomY: from.y + from.height / 2
+            };
+            const toRect = {
+                y: to.y - to.height / 2,
+                w: to.width,
+                h: to.height,
+                cx: to.x,
+                cy: to.y,
+                rightX: to.x + to.width / 2 + toRightAdj,
+                leftX: to.x - to.width / 2 + toLeftAdj,
+                topY: to.y - to.height / 2,
+                bottomY: to.y + to.height / 2
+            };
+
+            const padding = 42;
+            let points = [];
+            let direction = '';
+
+            if (toRect.y > fromRect.y + fromRect.h + 20) {
+                const startPt = { x: fromRect.cx, y: fromRect.bottomY };
+                const endPt = { x: toRect.cx, y: toRect.topY };
+                const midY = (startPt.y + endPt.y) / 2;
+                points = [startPt, { x: startPt.x, y: midY }, { x: endPt.x, y: midY }, endPt];
+                direction = 'down';
+            } else if (toRect.y < fromRect.y - 20) {
+                let side = 'right';
+                if (loopSide && loopSide !== 'auto') side = loopSide;
+                else if (toRect.cx < fromRect.cx) side = 'left';
+
+                if (side === 'left') {
+                    const startPt = { x: fromRect.leftX, y: fromRect.cy };
+                    const endPt = { x: toRect.leftX, y: toRect.cy };
+                    const midX = Math.min(startPt.x, endPt.x) - padding;
+                    points = [startPt, { x: midX, y: startPt.y }, { x: midX, y: endPt.y }, endPt];
+                    direction = 'right';
+                } else {
+                    const startPt = { x: fromRect.rightX, y: fromRect.cy };
+                    const endPt = { x: toRect.rightX, y: toRect.cy };
+                    const midX = Math.max(startPt.x, endPt.x) + padding;
+                    points = [startPt, { x: midX, y: startPt.y }, { x: midX, y: endPt.y }, endPt];
+                    direction = 'left';
+                }
+            } else {
+                const isBelow = toRect.topY > fromRect.cy;
+                const isShifted = Math.abs(toRect.cx - fromRect.cx) > (fromRect.w / 2);
+                if (isBelow && isShifted) {
+                    const isRight = toRect.cx > fromRect.cx;
+                    const startPt = isRight ? { x: fromRect.rightX, y: fromRect.cy } : { x: fromRect.leftX, y: fromRect.cy };
+                    let endX = toRect.cx;
+                    if (to.type === 'io') endX += 10;
+                    const endPt = { x: endX, y: toRect.topY };
+                    points = [startPt, { x: endPt.x, y: startPt.y }, endPt];
+                    direction = 'down';
+                } else if (toRect.cx > fromRect.cx) {
+                    const startPt = { x: fromRect.rightX, y: fromRect.cy };
+                    const endPt = { x: toRect.leftX, y: toRect.cy };
+                    const midX = (startPt.x + endPt.x) / 2;
+                    points = [startPt, { x: midX, y: startPt.y }, { x: midX, y: endPt.y }, endPt];
+                    direction = 'right';
+                } else {
+                    const startPt = { x: fromRect.leftX, y: fromRect.cy };
+                    const endPt = { x: toRect.rightX, y: toRect.cy };
+                    const midX = (startPt.x + endPt.x) / 2;
+                    points = [startPt, { x: midX, y: startPt.y }, { x: midX, y: endPt.y }, endPt];
+                    direction = 'left';
+                }
+            }
+
+            return { points, direction };
+        }
+
+        // --- Drawing ---
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const paragraphs = String(text).split('\n');
+            const lines = [];
+
+            for (const para of paragraphs) {
+                let current = '';
+                for (const ch of para) {
+                    const test = current + ch;
+                    if (context.measureText(test).width > maxWidth && current.length > 0) {
+                        lines.push(current);
+                        current = ch;
+                    } else {
+                        current = test;
+                    }
+                }
+                if (current) lines.push(current);
+            }
+
+            const totalHeight = lines.length * lineHeight;
+            let startY = y - totalHeight / 2 + lineHeight / 2;
+            for (const line of lines) {
+                context.fillText(line, x, startY);
+                startY += lineHeight;
+            }
+        }
+
+        function drawShape(shape, isSelected, isConnStart, context) {
+            context.save();
+            context.translate(shape.x, shape.y);
+
+            const theme = THEMES[shape.theme || TYPE_DEFAULT_THEME[shape.type]];
+            context.fillStyle = theme.fill;
+            context.lineWidth = (isSelected || isConnStart) ? 3 : 2;
+            context.strokeStyle = (isSelected || isConnStart) ? '#ef4444' : theme.stroke;
+
+            context.beginPath();
+            if (shape.type === 'terminal') {
+                const r = shape.height / 2;
+                context.roundRect(-shape.width / 2, -shape.height / 2, shape.width, shape.height, r);
+            } else if (shape.type === 'process') {
+                context.roundRect(-shape.width / 2, -shape.height / 2, shape.width, shape.height, 4);
+            } else if (shape.type === 'decision') {
+                context.moveTo(0, -shape.height / 2);
+                context.lineTo(shape.width / 2, 0);
+                context.lineTo(0, shape.height / 2);
+                context.lineTo(-shape.width / 2, 0);
+                context.closePath();
+            } else if (shape.type === 'io') {
+                const skew = 20;
+                context.moveTo(-shape.width / 2 + skew, -shape.height / 2);
+                context.lineTo(shape.width / 2, -shape.height / 2);
+                context.lineTo(shape.width / 2 - skew, shape.height / 2);
+                context.lineTo(-shape.width / 2, shape.height / 2);
+                context.closePath();
+            }
+
+            context.fill();
+            context.stroke();
+
+            if (shape.text) {
+                context.fillStyle = '#1e293b';
+                context.font = 'bold 14px system-ui, -apple-system, "Noto Sans TC", sans-serif';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                const maxWidth = shape.type === 'decision' ? shape.width * 0.62 : shape.width * 0.82;
+                wrapText(context, shape.text, 0, 0, maxWidth, 18);
+            }
+
+            context.restore();
+        }
+
+        function drawArrowHead(context, x, y, direction, color) {
+            context.beginPath();
+            context.moveTo(x, y);
+            if (direction === 'down') {
+                context.lineTo(x - 5, y - 10);
+                context.lineTo(x + 5, y - 10);
+            } else if (direction === 'left') {
+                context.lineTo(x + 10, y - 5);
+                context.lineTo(x + 10, y + 5);
+            } else if (direction === 'right') {
+                context.lineTo(x - 10, y - 5);
+                context.lineTo(x - 10, y + 5);
+            } else if (direction === 'up') {
+                context.lineTo(x - 5, y + 10);
+                context.lineTo(x + 5, y + 10);
+            }
+            context.closePath();
+            context.fillStyle = color;
+            context.fill();
+        }
+
+        function drawArrow(from, to, context, connObj) {
+            const { points, direction } = getArrowPath(from, to, connObj.loopSide);
+            if (points.length < 2) return;
+
+            const isSelected = selectedConnection === connObj;
+            const color = isSelected ? '#2563eb' : '#475569';
+
+            context.save();
+            context.beginPath();
+            context.strokeStyle = color;
+            context.lineWidth = isSelected ? 3 : 2;
+            context.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                context.lineTo(points[i].x, points[i].y);
+            }
+            context.stroke();
+
+            const lastPt = points[points.length - 1];
+            drawArrowHead(context, lastPt.x, lastPt.y, direction, color);
+
+            if (connObj.text) {
+                const { x: midX, y: midY } = getConnectionLabelPoint(points);
+                context.font = 'bold 12px system-ui, -apple-system, "Noto Sans TC", sans-serif';
+                const textWidth = context.measureText(connObj.text).width;
+                const textHeight = 16;
+
+                context.fillStyle = 'rgba(255, 255, 255, 0.94)';
+                context.fillRect(midX - textWidth / 2 - 5, midY - textHeight / 2 - 2, textWidth + 10, textHeight + 4);
+                context.strokeStyle = '#cbd5e1';
+                context.lineWidth = 1;
+                context.strokeRect(midX - textWidth / 2 - 5, midY - textHeight / 2 - 2, textWidth + 10, textHeight + 4);
+
+                context.fillStyle = '#1e293b';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillText(connObj.text, midX, midY);
+            }
+
+            context.restore();
+        }
+
+        function draw() {
+            ctx.save();
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+            canvas.style.backgroundPosition = `${viewport.x}px ${viewport.y}px`;
+            ctx.translate(viewport.x, viewport.y);
+
+            connections.forEach(conn => {
+                const from = shapes.find(s => s.id === conn.from);
+                const to = shapes.find(s => s.id === conn.to);
+                if (from && to) drawArrow(from, to, ctx, conn);
+            });
+
+            if (mode === 'connect' && connectionStartId && mousePos) {
+                const from = shapes.find(s => s.id === connectionStartId);
+                if (from) {
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(mousePos.x, mousePos.y);
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            shapes.forEach(shape => {
+                drawShape(shape, shape.id === selectedShapeId, shape.id === connectionStartId, ctx);
+            });
+
+            ctx.restore();
+        }
+
+        // --- Flowchart Linter & Export Modal ---
+        function runFlowchartLint() {
+            const warnings = [];
+            const hasTerminal = shapes.some(s => s.type === 'terminal');
+            if (!hasTerminal) {
+                warnings.push('還沒有放入「橢圓形 (Start / End)」。');
+            }
+            const emptyShapes = shapes.filter(s => !s.text || !s.text.trim()).length;
+            if (emptyShapes > 0) {
+                warnings.push(`還有 ${emptyShapes} 個圖形尚未填入文字（雙擊可輸入）。`);
+            }
+            const decisions = shapes.filter(s => s.type === 'decision');
+            for (const d of decisions) {
+                const outConns = connections.filter(c => c.from === d.id);
+                if (outConns.length < 2) {
+                    warnings.push(`菱形「${d.text || '判斷'}」建議拉出 2 條分支線（Yes / No）。`);
+                    break;
+                }
+            }
+            return warnings;
+        }
+
+        document.getElementById('btnOpenExport').addEventListener('click', () => {
+            commitEditor();
+            if (shapes.length === 0) {
+                alert('畫布是空的喔！先拉幾個圖形吧。');
+                return;
+            }
+            modalError.textContent = '';
+            filenameInput.classList.remove('invalid');
+
+            const warnings = runFlowchartLint();
+            if (warnings.length === 0) {
+                lintBox.className = 'lint-box ok';
+                lintBox.innerHTML = '✅ <strong>結構檢查通過！</strong> 流程圖元件與分支皆已完整。';
+            } else {
+                lintBox.className = 'lint-box';
+                lintBox.innerHTML = `<strong>💡 自我檢查小提醒：</strong><ul>${warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
+            }
+
+            downloadModal.showModal();
+            filenameInput.focus();
+        });
+
+        exportForm.addEventListener('submit', (e) => {
+            if (e.submitter && e.submitter.value === 'cancel') return;
+
+            const filename = filenameInput.value.trim();
+            if (!filename) {
+                e.preventDefault();
+                modalError.textContent = '請輸入班級座號才能下載喔！';
+                filenameInput.classList.add('invalid');
+                filenameInput.focus();
+            }
+        });
+
+        downloadModal.addEventListener('close', () => {
+            const action = downloadModal.returnValue;
+            downloadModal.returnValue = '';
+            if (action === 'confirm') {
+                const filename = filenameInput.value.trim();
+                if (filename) performDownload(filename);
+            }
+        });
+
+        function performDownload(filename) {
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+            shapes.forEach(s => {
+                minX = Math.min(minX, s.x - s.width / 2);
+                minY = Math.min(minY, s.y - s.height / 2);
+                maxX = Math.max(maxX, s.x + s.width / 2);
+                maxY = Math.max(maxY, s.y + s.height / 2);
+            });
+
+            // Include all connection path segments and labels (fixes loop arrow clipping)
+            connections.forEach(conn => {
+                const from = shapes.find(s => s.id === conn.from);
+                const to = shapes.find(s => s.id === conn.to);
+                if (!from || !to) return;
+                const { points } = getArrowPath(from, to, conn.loopSide);
+                points.forEach(pt => {
+                    minX = Math.min(minX, pt.x - 24);
+                    minY = Math.min(minY, pt.y - 24);
+                    maxX = Math.max(maxX, pt.x + 24);
+                    maxY = Math.max(maxY, pt.y + 24);
+                });
+            });
+
+            const padding = 48;
+            minX -= padding;
+            minY -= padding;
+            maxX += padding;
+            maxY += padding + 26; // Room for bottom watermark
+
+            const width = Math.max(maxX - minX, 260);
+            const height = Math.max(maxY - minY, 160);
+            const scale = 2; // 2x crisp Retina export
+
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = Math.ceil(width * scale);
+            tempCanvas.height = Math.ceil(height * scale);
+            const tCtx = tempCanvas.getContext('2d');
+
+            tCtx.scale(scale, scale);
+            tCtx.fillStyle = '#ffffff';
+            tCtx.fillRect(0, 0, width, height);
+
+            tCtx.save();
+            tCtx.translate(-minX, -minY);
+
+            const prevSelectedShape = selectedShapeId;
+            const prevSelectedConn = selectedConnection;
+            selectedShapeId = null;
+            selectedConnection = null;
+
+            connections.forEach(conn => {
+                const from = shapes.find(s => s.id === conn.from);
+                const to = shapes.find(s => s.id === conn.to);
+                if (from && to) drawArrow(from, to, tCtx, conn);
+            });
+            shapes.forEach(shape => {
+                drawShape(shape, false, false, tCtx);
+            });
+
+            selectedShapeId = prevSelectedShape;
+            selectedConnection = prevSelectedConn;
+            tCtx.restore();
+
+            // Corner stamp with student ID & timestamp
+            tCtx.fillStyle = '#64748b';
+            tCtx.font = '600 12px system-ui, -apple-system, "Noto Sans TC", sans-serif';
+            tCtx.textAlign = 'right';
+            tCtx.textBaseline = 'bottom';
+            tCtx.fillText(`${filename} • SLJS Flowchart`, width - 16, height - 10);
+
+            const link = document.getElementById('downloadLink');
+            link.download = `${filename}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+            showToast(`已下載 ${filename}.png`);
+        }
+
+        // --- Save / Load Project JSON ---
+        document.getElementById('btnSaveJson').addEventListener('click', () => {
+            commitEditor();
+            const payload = JSON.stringify({ version: '4.0', shapes, connections, nextId }, null, 2);
+            const blob = new Blob([payload], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.getElementById('downloadLink');
+            link.download = 'flowchart_project.json';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('已儲存專案檔 (.json)');
+        });
+
+        const jsonFileInput = document.getElementById('jsonFileInput');
+        document.getElementById('btnLoadJson').addEventListener('click', () => jsonFileInput.click());
+        jsonFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(reader.result);
+                    if (!Array.isArray(data.shapes) || !Array.isArray(data.connections)) {
+                        throw new Error('格式錯誤');
+                    }
+                    saveState();
+                    shapes = data.shapes;
+                    connections = data.connections;
+                    nextId = data.nextId || (shapes.reduce((m, s) => Math.max(m, s.id), 0) + 1);
+                    selectedShapeId = null;
+                    selectedConnection = null;
+                    viewport = { x: 0, y: 0 };
+                    draw();
+                    updateToolbar();
+                    showToast('已載入專案檔');
+                } catch {
+                    alert('無法讀取此檔案，請確認是正確的流程圖 .json 檔。');
+                } finally {
+                    jsonFileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Wire toolbar buttons
+        btnUndo.addEventListener('click', undo);
+        btnSelect.addEventListener('click', () => setMode('select'));
+        btnPan.addEventListener('click', () => setMode('pan'));
+        btnConnect.addEventListener('click', () => setMode('connect'));
+        btnFlip.addEventListener('click', flipConnectionSide);
+        btnDelete.addEventListener('click', deleteSelected);
+        btnClear.addEventListener('click', clearCanvas);
+    </script>
+</body>
+</html>
